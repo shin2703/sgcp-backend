@@ -1,6 +1,5 @@
 package pe.softshinware.sgcp_backend.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,9 +53,7 @@ public class CitaController {
                 request.getFechaHora()
         );
 
-        Deuda deuda = deudaRepository.findByCitaId(cita.getId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Deuda no generada para la cita: " + cita.getId()));
+        Deuda deuda = deudaRepository.findByCitaId(cita.getId()).orElse(null);
 
         CitaResponseDTO response = new CitaResponseDTO(
                 cita.getId(),
@@ -66,9 +63,9 @@ public class CitaController {
                 cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido(),
                 cita.getPsicologo().getNombre() + " " + cita.getPsicologo().getApellido(),
                 cita.getEspecialidad().getNombre(),
-                deuda.getCodigo(),
-                deuda.getMonto(),
-                deuda.getEstado()
+                deuda != null ? deuda.getCodigo() : "",
+                deuda != null ? deuda.getMonto() : null,
+                deuda != null ? deuda.getEstado() : ""
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
