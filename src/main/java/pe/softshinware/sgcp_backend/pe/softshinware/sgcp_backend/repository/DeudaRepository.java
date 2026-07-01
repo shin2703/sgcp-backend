@@ -11,4 +11,6 @@ public interface DeudaRepository extends JpaRepository<Deuda, Long> {
     Optional<Deuda> findByCitaId(Long citaId);
 
     List<Deuda> findByCita_Paciente_IdAndEstado(Long pacienteId, String estado);
+
+    List<Deuda> findByEstado(String estado);
 }

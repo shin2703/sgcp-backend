@@ -8,10 +8,10 @@ import pe.softshinware.sgcp_backend.dto.PagoRequestDTO;
 import pe.softshinware.sgcp_backend.dto.PagoResponseDTO;
 import pe.softshinware.sgcp_backend.entity.ComprobantePago;
 import pe.softshinware.sgcp_backend.entity.Deuda;
+import pe.softshinware.sgcp_backend.repository.DeudaRepository;
 import pe.softshinware.sgcp_backend.service.PagoService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/pagos")
@@ -20,6 +20,12 @@ import java.util.stream.Collectors;
 public class PagoController {
 
     private final PagoService pagoService;
+    private final DeudaRepository deudaRepository;
+
+    @GetMapping("/deudas/pendientes")
+    public ResponseEntity<List<Deuda>> listarDeudasPendientes() {
+        return ResponseEntity.ok(deudaRepository.findByEstado("pendiente"));
+    }
 
     @GetMapping("/deudas/paciente/{pacienteId}")
     public ResponseEntity<List<Deuda>> buscarDeudasPendientes(@PathVariable Long pacienteId) {
