@@ -1,4 +1,4 @@
-package pe.softshinware.sgcp_backend.Service;
+package pe.softshinware.sgcp_backend.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,15 +8,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pe.softshinware.sgcp_backend.entity.*;
 import pe.softshinware.sgcp_backend.repository.*;
-import pe.softshinware.sgcp_backend.service.CitaService;
-import pe.softshinware.sgcp_backend.service.CorrelativoService;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,7 +62,8 @@ class CitaServiceTest {
         when(psicologoRepository.findById(32L)).thenReturn(Optional.of(psicologo));
         when(especialidadRepository.findById(23L)).thenReturn(Optional.of(especialidad));
         when(historiaClinicaRepository.findByPacienteId(1L)).thenReturn(Optional.of(new HistoriaClinica()));
-        when(citaRepository.existsByPsicologoIdAndFechaHoraAndEstadoNot(32L, fechaHora, "cancelada"))
+        when(citaRepository.existsByPsicologoIdAndFechaHoraBetweenAndEstadoNot(
+                eq(32L), any(LocalDateTime.class), any(LocalDateTime.class), eq("cancelada")))
                 .thenReturn(false);
         when(correlativoService.generarCodigo(eq("Cita"), eq("CIT"))).thenReturn("CIT000001");
         when(correlativoService.generarCodigo(eq("Deuda"), eq("DEU"))).thenReturn("DEU000001");
@@ -85,7 +84,8 @@ class CitaServiceTest {
         when(psicologoRepository.findById(32L)).thenReturn(Optional.of(psicologo));
         when(especialidadRepository.findById(23L)).thenReturn(Optional.of(especialidad));
         when(historiaClinicaRepository.findByPacienteId(1L)).thenReturn(Optional.of(new HistoriaClinica()));
-        when(citaRepository.existsByPsicologoIdAndFechaHoraAndEstadoNot(32L, fechaHora, "cancelada"))
+        when(citaRepository.existsByPsicologoIdAndFechaHoraBetweenAndEstadoNot(
+                eq(32L), any(LocalDateTime.class), any(LocalDateTime.class), eq("cancelada")))
                 .thenReturn(true);
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
@@ -109,7 +109,8 @@ class CitaServiceTest {
         when(psicologoRepository.findById(32L)).thenReturn(Optional.of(psicologo));
         when(especialidadRepository.findById(23L)).thenReturn(Optional.of(especialidad));
         when(historiaClinicaRepository.findByPacienteId(1L)).thenReturn(Optional.of(new HistoriaClinica()));
-        when(citaRepository.existsByPsicologoIdAndFechaHoraAndEstadoNot(32L, fechaHora, "cancelada"))
+        when(citaRepository.existsByPsicologoIdAndFechaHoraBetweenAndEstadoNot(
+                eq(32L), any(LocalDateTime.class), any(LocalDateTime.class), eq("cancelada")))
                 .thenReturn(false);
         when(correlativoService.generarCodigo(eq("Cita"), eq("CIT"))).thenReturn("CIT000002");
         when(correlativoService.generarCodigo(eq("Deuda"), eq("DEU"))).thenReturn("DEU000002");

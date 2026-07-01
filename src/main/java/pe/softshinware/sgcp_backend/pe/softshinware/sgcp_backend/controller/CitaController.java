@@ -1,5 +1,6 @@
 package pe.softshinware.sgcp_backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,6 @@ import pe.softshinware.sgcp_backend.dto.CitaRequestDTO;
 import pe.softshinware.sgcp_backend.dto.CitaResponseDTO;
 import pe.softshinware.sgcp_backend.entity.Cita;
 import pe.softshinware.sgcp_backend.entity.Deuda;
-import pe.softshinware.sgcp_backend.repository.CitaRepository;
 import pe.softshinware.sgcp_backend.repository.DeudaRepository;
 import pe.softshinware.sgcp_backend.service.CitaService;
 import java.util.List;
@@ -21,11 +21,10 @@ public class CitaController {
 
     private final CitaService citaService;
     private final DeudaRepository deudaRepository;
-    private final CitaRepository citaRepository;
 
     @GetMapping
     public ResponseEntity<List<CitaResponseDTO>> listarCitas() {
-        List<Cita> citas = citaRepository.findAll();
+        List<Cita> citas = citaService.listarCitas();
         List<CitaResponseDTO> response = citas.stream().map(cita -> {
             Deuda deuda = deudaRepository.findByCitaId(cita.getId()).orElse(null);
             return new CitaResponseDTO(
@@ -45,7 +44,7 @@ public class CitaController {
     }
 
     @PostMapping
-    public ResponseEntity<CitaResponseDTO> registrarCita(@RequestBody CitaRequestDTO request) {
+    public ResponseEntity<CitaResponseDTO> registrarCita(@Valid @RequestBody CitaRequestDTO request) {
         Cita cita = citaService.registrarCita(
                 request.getPacienteId(),
                 request.getPsicologoId(),

@@ -9,6 +9,7 @@ import pe.softshinware.sgcp_backend.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,10 @@ public class CitaService {
     private final EspecialidadRepository especialidadRepository;
     private final HistoriaClinicaRepository historiaClinicaRepository;
     private final CorrelativoService correlativoService;
+
+    public List<Cita> listarCitas() {
+        return citaRepository.findAll();
+    }
 
     @Transactional
     public Cita registrarCita(Long pacienteId, Long psicologoId, Long especialidadId, LocalDateTime fechaHora) {
