@@ -15,4 +15,7 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
 
     boolean existsByPsicologoIdAndFechaHoraAndEstadoNot(
             Long psicologoId, LocalDateTime fechaHora, String estadoExcluido);
+
+    boolean existsByPsicologoIdAndFechaHoraBetweenAndEstadoNot(
+            Long psicologoId, LocalDateTime inicio, LocalDateTime fin, String estadoExcluido);
 }

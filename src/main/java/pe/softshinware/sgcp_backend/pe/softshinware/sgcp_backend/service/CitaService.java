@@ -34,7 +34,7 @@ public class CitaService {
         Especialidad especialidad = especialidadRepository.findById(especialidadId)
                 .orElseThrow(() -> new EntityNotFoundException("Especialidad no encontrada: " + especialidadId));
 
-        // Flujo alterno del CUS: si no tiene HC activa, se apertura automáticamente
+        // Flujo alterno: si no tiene HC activa, se apertura automáticamente
         historiaClinicaRepository.findByPacienteId(pacienteId)
                 .orElseGet(() -> {
                     HistoriaClinica nuevaHc = new HistoriaClinica();
@@ -45,12 +45,15 @@ public class CitaService {
                     return historiaClinicaRepository.save(nuevaHc);
                 });
 
-        // R0013: impedir dos citas para el mismo psicólogo en el mismo horario
-        boolean ocupado = citaRepository.existsByPsicologoIdAndFechaHoraAndEstadoNot(
-                psicologoId, fechaHora, "cancelada");
-        if (ocupado) {
+        // R0013: impedir citas en el mismo bloque de 1 hora para el mismo psicólogo
+        LocalDateTime bloqueInicio = fechaHora.minusMinutes(59);
+        LocalDateTime bloqueFin = fechaHora.plusMinutes(59);
+
+        boolean traslape = citaRepository.existsByPsicologoIdAndFechaHoraBetweenAndEstadoNot(
+                psicologoId, bloqueInicio, bloqueFin, "cancelada");
+        if (traslape) {
             throw new IllegalStateException(
-                    "El psicólogo ya tiene una cita registrada en ese horario (R0013)");
+                    "El psicólogo ya tiene una cita en ese bloque horario (R0013). Debe haber al menos 1 hora de diferencia entre citas.");
         }
 
         Cita cita = new Cita();
@@ -62,7 +65,7 @@ public class CitaService {
         cita.setEspecialidad(especialidad);
         citaRepository.save(cita);
 
-        // R0012: generar deuda automática con concepto fijo y monto de la tarifa
+        // R0012: generar deuda automática con monto de la tarifa
         Deuda deuda = new Deuda();
         deuda.setCodigo(correlativoService.generarCodigo("Deuda", "DEU"));
         deuda.setConcepto("gastos de cita");
